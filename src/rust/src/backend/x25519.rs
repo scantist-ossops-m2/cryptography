@@ -17,11 +17,57 @@ pub(crate) struct X25519PublicKey {
     pkey: openssl::pkey::PKey<openssl::pkey::Public>,
 }
 
-#[pyo3::prelude::pyfunction]
 fn generate_key() -> CryptographyResult<X25519PrivateKey> {
     Ok(X25519PrivateKey {
         pkey: openssl::pkey::PKey::generate_x25519()?,
     })
+}
+#[doc(hidden)]
+mod generate_key {
+    pub(crate) struct MakeDef;
+    pub const DEF: ::pyo3::impl_::pymethods::PyMethodDef = MakeDef::DEF;
+    pub fn add_to_module(
+        module: &::pyo3::Bound<'_, ::pyo3::types::PyModule>,
+    ) -> ::pyo3::PyResult<()> {
+        use ::pyo3::prelude::PyModuleMethods;
+        use ::std::convert::Into;
+        module.add_function(::pyo3::types::PyCFunction::internal_new(
+            module.py(),
+            &DEF,
+            module.into(),
+        )?)
+    }
+}
+impl generate_key::MakeDef {
+    const DEF: ::pyo3::impl_::pymethods::PyMethodDef =
+        ::pyo3::impl_::pymethods::PyMethodDef::noargs(
+            "generate_key\0",
+            ::pyo3::impl_::pymethods::PyCFunction({
+                unsafe extern "C" fn trampoline(
+                    _slf: *mut ::pyo3::ffi::PyObject,
+                    _args: *mut ::pyo3::ffi::PyObject,
+                ) -> *mut ::pyo3::ffi::PyObject {
+                    ::pyo3::impl_::trampoline::noargs(_slf, _args, __pyfunction_generate_key)
+                }
+                trampoline
+            }),
+            "generate_key()\n--\n\n\0",
+        );
+}
+#[allow(non_snake_case)]
+unsafe fn __pyfunction_generate_key<'py>(
+    py: ::pyo3::Python<'py>,
+    _slf: *mut ::pyo3::ffi::PyObject,
+) -> ::pyo3::PyResult<*mut ::pyo3::ffi::PyObject> {
+    let _slf_ref = &_slf;
+    let function = generate_key;
+    #[allow(clippy::let_unit_value)]
+    let result = ::pyo3::impl_::wrap::map_result_into_ptr(
+        py,
+        ::pyo3::impl_::wrap::OkWrap::wrap(function())
+            .map_err(::core::convert::Into::<::pyo3::PyErr>::into),
+    );
+    result
 }
 
 pub(crate) fn private_key_from_pkey(
